@@ -1,0 +1,48 @@
+<html>
+    <head>
+        <title>Krypton | Panel</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <!--* Tailwind *-->
+        <link rel="stylesheet" href="/assets/tailwind.css">
+
+        <!--* SweetAlert2 *-->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@sweetalert2/themes@4.0.1/dark/dark.min.css">
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9/dist/sweetalert2.min.js"></script>
+        <script src="/assets/toaster.js"></script>
+    </head>
+    <body class="bg-gray-900">
+        <div class="flex justify-center items-center h-screen">
+            <div class="bg-gray-800 rounded-lg p-16">
+                <div class="text-center mb-4">
+                    <h1 class="font-mono text-gray-100 text-3xl">Krypton</h1>
+                    <h3 class="font-mono text-gray-400 text-xl">Admin Panel</h3>
+                </div>
+                <p class="text-gray-300">This page is password protected, please, enter it below</p>
+                <input id="password" class="bg-gray-900 text-gray-300 rounded p-2 w-full mt-2 text-center" autocomplete="off" placeholder="Password">
+                <button class="bg-gray-900 text-gray-300 font-semibold text-center w-full py-1 rounded mt-2" onclick="attemptLogIn()">Log In</button>
+            </div>
+        </div>
+        <script>
+            const elements = {
+                password: document.getElementById("password")
+            }
+            function attemptLogIn() {
+                let password = elements.password.value
+                fetch('/admin/login', {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        password: password
+                    })
+                })
+                .then(data => data.json())
+                .then(json => {
+                    ShowToast(json.message, json.success ? "success" : "error")
+                    setTimeout(()=>location.reload(), 1000)
+                })
+            }
+        </script>
+    </body>
+</html>

@@ -1,0 +1,119 @@
+<html>
+    <head>
+        <title>Krypton | Panel</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <!--* Tailwind *-->
+        <link rel="stylesheet" href="/assets/tailwind.css">
+
+        <!--* SweetAlert2 *-->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@sweetalert2/themes@4.0.1/dark/dark.min.css">
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9/dist/sweetalert2.min.js"></script>
+        <script src="/assets/toaster.js"></script>
+    </head>
+    <body class="bg-gray-900">
+        <div class="relative pt-2 px-4 pb-2 mb-8">
+            <div class="mx-auto px-4" style="width:90rem;">
+                <div class="text-center mb-4">
+                    <h1 class="font-mono text-gray-100 text-3xl">Krypton</h1>
+                    <h3 class="font-mono text-gray-400 text-xl">Admin Panel</h3>
+                </div>
+                <table style="width:100%;">
+                    <tr class="font-bold text-center text-gray-100">
+                        <th>ID</th>
+                        <th>Username</th>
+                        <th>HWID</th>
+                        <th>License</th>
+                        <th>Actions</th>
+                    </tr>
+                    <% for(let i=0;i<data.length;i++) { %>
+                        <tr class="text-gray-300 text-center">
+                            <td><%- data[i].id %></td>
+                            <td><%- data[i].username %></td>
+                            <td>
+                                <%- data[i].hwid.toString() %>
+                                <!-- <input
+                                class="bg-gray-700 rounded p-1" autocomplete="off" value="<%- data[i].hwid.toString() + 1 %>"> -->
+                            </td>
+                            <td>
+                                <%- data[i].license %>
+                                <!-- <input class="bg-gray-700 rounded p-1 w-14 text-center" autocomplete="off" value="<%- data[i].license %>"> -->
+                            </td>
+                            <td>
+                                <button
+                                class="px-4 py-1 bg-red-500 hover:bg-red-600 duration-300 rounded font-semibold text-gray-100"
+                                onclick="deleteUser(<%- data[i].id %>)"
+                                >
+                                    Delete
+                                </button>
+                            </td>
+                        </tr>
+                    <% } %>
+
+
+                    <!-- Add User -->
+                    <tr class="text-gray-300 text-center mt-8">
+                        <td><%- data[data.length-1]?.id+1 || '?' %></td>
+                        <td>
+                            <input class="bg-gray-700 rounded p-1" value="" autocomplete="off" placeholder="Username" id="new_username">
+                        </td>
+                        <td>
+                            <input class="bg-gray-700 rounded p-1" value="" autocomplete="off" placeholder="HWID" id="new_hwid">
+                        </td>
+                        <td>
+                            <input class="bg-gray-700 rounded p-1 w-14 text-center" autocomplete="off" value="1" id="new_license">
+                        </td>
+                        <td>
+                            <button class="px-4 py-1 bg-green-500 hover:bg-green-600 duration-300 rounded font-semibold text-gray-100" onclick="addNewUser()">
+                                Add
+                            </button>
+                        </td>
+                    </tr>
+                </table>
+                <script>
+                    const elements = {
+                        new: {
+                            username:   document.getElementById("new_username"),
+                            hwid:       document.getElementById("new_hwid"),
+                            license:    document.getElementById("new_license"),
+                        }
+                    }
+                    function addNewUser() {
+                        fetch('/admin/new', {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json"
+                            },
+                            body: JSON.stringify({
+                                username: elements.new.username.value,
+                                hwid: elements.new.hwid.value,
+                                license: elements.new.license.value
+                            })
+                        })
+                        .then(data => data.json())
+                        .then(json => {
+                            ShowToast(json.message, json.success ? "success" : "error")
+                            setTimeout(()=>location.reload(), 1000)
+                        })
+                    }
+
+                    function deleteUser(id) {
+                        fetch('/admin/delete', {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json"
+                            },
+                            body: JSON.stringify({
+                                id: id
+                            })
+                        })
+                        .then(data => data.json())
+                        .then(json => {
+                            ShowToast(json.message, json.success ? "success" : "error")
+                            setTimeout(()=>location.reload(), 1000)
+                        })
+                    }
+                </script>
+            </div>
+        </div>
+    </body>
+</html>
